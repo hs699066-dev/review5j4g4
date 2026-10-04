@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>注釋尋寶大冒險：通往段考高分的三重島嶼</title>
+    <style>
+        :root {
+            --primary-color: #3b82f6;
+            --secondary-color: #10b981;
+            --accent-color: #f59e0b;
+            --bg-color: #f0fdf4;
+            --card-bg: #ffffff;
+            --text-color: #1f2937;
+        }
+
+        body {
+            font-family: "Microsoft JhengHei", Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 650px;
+            background: var(--card-bg);
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            box-sizing: border-box;
+            text-align: center;
+            margin: 15px;
+        }
+
+        h1 {
+            color: #1e3a8a;
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            color: #1e40af;
+            font-size: 1.4rem;
+        }
+
+        p {
+            font-size: 1.1rem;
+            line-height: 1.5;
+        }
+
+        .btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 14px 28px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            margin: 10px 5px;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11);
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary-color);
+        }
+
+        .btn-accent {
+            background-color: var(--accent-color);
+        }
+
+        /* 關卡選單 */
+        .island-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .island-card {
+            background: #eff6ff;
+            border: 2px solid #bfdbfe;
+            border-radius: 15px;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .island-card:hover {
+            background: #dbeafe;
+            border-color: var(--primary-color);
+        }
+
+        .island-info {
+            text-align: left;
+        }
+
+        .island-info h3 {
+            margin: 0 0 5px 0;
+            color: #1e40af;
+        }
+
+        .island-info p {
+            margin: 0;
+            font-size: 0.95rem;
+            color: #4b5563;
+        }
+
+        /* 複習卡片介面 */
+        .codex-box {
+            max-height: 300px;
+            overflow-y: auto;
+            text-align: left;
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .codex-item {
+            padding: 8px 0;
+            border-bottom: 1px dashed #cbd5e1;
+            font-size: 1.05rem;
+        }
+
+        .codex-item:last-child {
+            border-bottom: none;
+        }
+
+        .codex-word {
+            font-weight: bold;
+            color: #1d4ed8;
+        }
+
+        .codex-ans {
+            color: #475569;
+        }
+
+        /* 遊戲進行畫面 */
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 1rem;
+            color: #6b7280;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 10px;
+        }
+
+        .combo-badge {
+            background: #fef3c7;
+            color: #d97706;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .word-display {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #1e3a8a;
+            margin: 20px 0;
+            background: #f3f4f6;
+            padding: 20px;
+            border-radius: 12px;
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .option-btn {
+            background: #ffffff;
+            border: 2px solid #cbd5e1;
+            border-radius: 12px;
+            padding: 15px;
+            font-size: 1.1rem;
+            color: var(--text-color);
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            background: #f1f5f9;
+            border-color: var(--primary-color);
+        }
+
+        .option-btn.correct {
+            background: #d1fae5 !important;
+            border-color: var(--secondary-color) !important;
+            color: #065f46;
+        }
+
+        .option-btn.wrong {
+            background: #fee2e2 !important;
+            border-color: #ef4444 !important;
+            color: #991b1b;
+        }
+
+        #feedback-msg {
+            font-size: 1.1rem;
+            font-weight: bold;
+            min-height: 30px;
+            margin: 15px 0;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .trophy {
+            font-size: 4rem;
+            margin: 10px 0;
+        }
+
+        /* 自訂彈跳訊息對話框 (Modal Overlay) */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-box {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+            animation: modalPop 0.25s ease-out;
+        }
+
+        @keyframes modalPop {
+            0% { transform: scale(0.9); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-box p {
+            margin-bottom: 25px;
+            font-size: 1.2rem;
+            color: #1f2937;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- 首頁畫面 -->
+    <div id="screen-home">
+        <h1>🏝️ 注釋尋寶大冒險</h1>
+        <p>歡迎來到段考複習島嶼！每關開始前可先看複習秘笈，答錯的題目也會再次出現幫你複習喔！</p>
+        <div class="trophy">🗺️✨</div>
+        <button class="btn" onclick="showIslandSelect()">開始冒險</button>
+    </div>
+
+    <!-- 關卡選擇畫面 -->
+    <div id="screen-island-select" class="hidden">
+        <h2>選擇你的冒險島嶼</h2>
+        <p>請依序挑戰三座島嶼，點擊後可先查看注釋複習秘笈！</p>
+        <div class="island-grid">
+            <div class="island-card" onclick="openCodex(0)">
+                <div class="island-info">
+                    <h3>第一島：第 1 課注釋</h3>
+                    <p>氣脫委頓、行潦、震懾等 11 題</p>
+                </div>
+                <span id="badge-0">⭐ 未解鎖</span>
+            </div>
+            <div class="island-card" onclick="openCodex(1)">
+                <div class="island-info">
+                    <h3>第二島：第 2 課注釋</h3>
+                    <p>皎皎河漢女、反哺、經年等 14 題</p>
+                </div>
+                <span id="badge-1">🔒 尚未解鎖</span>
+            </div>
+            <div class="island-card" onclick="openCodex(2)">
+                <div class="island-info">
+                    <h3>第三島：第 3 課注釋</h3>
+                    <p>熹微、魂牽夢縈、啟蒙等 5 題</p>
+                </div>
+                <span id="badge-2">🔒 尚未解鎖</span>
+            </div>
+        </div>
+        <button class="btn btn-secondary" onclick="resetProgress()">重置進度</button>
+    </div>
+
+    <!-- 考前複習卡片（秘笈）畫面 -->
+    <div id="screen-codex" class="hidden">
+        <h2 id="codex-title">📖 第一島・注釋複習秘笈</h2>
+        <p>挑戰開始前，先花一點時間快速瀏覽本關注釋，準備好就可以開始闖關囉！</p>
+        <div id="codex-content" class="codex-box">
+            <!-- 動態填入注釋清單 -->
+        </div>
+        <button class="btn btn-secondary" onclick="showIslandSelect()">返回地圖</button>
+        <button class="btn" onclick="startLevelFromCodex()">準備好了，開始挑戰！</button>
+    </div>
+
+    <!-- 遊戲進行畫面 -->
+    <div id="screen-game" class="hidden">
+        <div class="game-header">
+            <span id="level-title">第一島</span>
+            <span id="combo-box" class="combo-badge hidden">🔥 連擊 0</span>
+            <span id="progress-text">剩餘題目：10</span>
+        </div>
+        <div id="word-box" class="word-display">載入中...</div>
+        <div id="options-box" class="options-container">
+            <!-- 選項按鈕會動態生成 -->
+        </div>
+        <div id="feedback-msg"></div>
+        <button id="next-btn" class="btn hidden" onclick="nextQuestion()">下一題</button>
+    </div>
+
+    <!-- 過關畫面 -->
+    <div id="screen-victory" class="hidden">
+        <h1>🎉 太棒了！挑戰成功！</h1>
+        <div class="trophy">🏆</div>
+        <p id="victory-desc">你已經順利通關所有島嶼，成功掌握段考注釋！</p>
+        <button class="btn" onclick="showIslandSelect()">返回地圖</button>
+    </div>
+</div>
+
+<!-- 自訂彈跳對話框容器 (取代 alert/confirm) -->
+<div id="custom-modal" class="modal-overlay hidden">
+    <div class="modal-box">
+        <p id="modal-text">提示訊息</p>
+        <div id="modal-btn-container" class="modal-buttons">
+            <button class="btn" onclick="closeModal()">確定</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const levelsData = [
+        // 第一關 (11題)
+        [
+            { word: "氣脫委頓", answer: "失神無力，疲乏困頓" },
+            { word: "氣勢萬鈞", answer: "氣勢雄偉壯盛的樣子" },
+            { word: "孤伶伶", answer: "孤單的樣子" },
+            { word: "蘇醒", answer: "清醒過來" },
+            { word: "霹靂環起", answer: "急而響的雷聲四處響起" },
+            { word: "滂沱", answer: "雨勢盛大的樣子" },
+            { word: "行潦", answer: "因下雨而匯流於道旁的流水" },
+            { word: "登時", answer: "立刻" },
+            { word: "震「懾」", answer: "恐懼" },
+            { word: "肆虐", answer: "任意作惡為害" },
+            { word: "匍匐", answer: "伏地爬行" }
+        ],
+        // 第二關 (14題)
+        [
+            { word: "「皎皎」河漢女", answer: "明亮的樣子" },
+            { word: "「札札」弄機杼", answer: "此指織布的聲音" },
+            { word: "「盈盈」一水間", answer: "水清淺的樣子" },
+            { word: "「脈脈」不得語", answer: "含情凝視的樣子" },
+            { word: "「纖纖」擢素手", answer: "細長柔美的樣子" },
+            { word: "終日不成「章」", answer: "織品上縱橫交錯的紋理" },
+            { word: "經年", answer: "形容時間長久" },
+            { word: "「斯」徒輩", answer: "此、這" },
+            { word: "使爾悲不「任」", answer: "承受" },
+            { word: "母歿喪不臨", answer: "母親去世卻不回家奔喪" },
+            { word: "相「去」復幾許", answer: "距離" },
+            { word: "泣涕「零如雨」", answer: "如雨般地落下" },
+            { word: "擢素手", answer: "舉起白嫩的手" },
+            { word: "反「哺」", answer: "餵養" }
+        ],
+        // 第三關 (5題)
+        [
+            { word: "吱嗒吱嗒", answer: "爛泥地中踩水所發出的聲響" },
+            { word: "亮晃晃", answer: "明亮閃爍的樣子" },
+            { word: "熹微", answer: "陽光微弱的樣子" },
+            { word: "魂牽夢縈", answer: "形容極為思念，連在夢中也無法忘懷" },
+            { word: "啟蒙", answer: "開導、啟發" }
+        ]
+    ];
+
+    let currentLevel = 0;
+    let activeQueue = []; 
+    let unlockedLevels = [true, false, false]; 
+    let currentCorrectAnswer = "";
+    let comboCount = 0;
+    let modalCallback = null;
+
+    // Web Audio API 提示音效
+    function playSound(type) {
+        try {
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+
+            if (type === 'correct') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(587.33, audioCtx.currentTime); // D5
+                osc.frequency.setValueAtTime(880, audioCtx.currentTime + 0.1); // A5
+                gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.3);
+            } else if (type === 'wrong') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(200, audioCtx.currentTime);
+                osc.frequency.setValueAtTime(150, audioCtx.currentTime + 0.15);
+                gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.3);
+            }
+        } catch (e) {
+            // 略過若瀏覽器未允許自動撥放
+        }
+    }
+
+    function showModal(text, onConfirm = null, showCancel = false) {
+        const modal = document.getElementById('custom-modal');
+        document.getElementById('modal-text').innerText = text;
+        modalCallback = onConfirm;
+
+        const btnContainer = document.getElementById('modal-btn-container');
+        if (showCancel) {
+            btnContainer.innerHTML = `
+                <button class="btn btn-secondary" onclick="handleModalConfirm(false)">取消</button>
+                <button class="btn" onclick="handleModalConfirm(true)">確定</button>
+            `;
+        } else {
+            btnContainer.innerHTML = `
+                <button class="btn" onclick="handleModalConfirm(true)">確定</button>
+            `;
+        }
+
+        modal.classList.remove('hidden');
+    }
+
+    function handleModalConfirm(confirmed) {
+        const modal = document.getElementById('custom-modal');
+        modal.classList.add('hidden');
+        if (confirmed && typeof modalCallback === 'function') {
+            modalCallback();
+        }
+        modalCallback = null;
+    }
+
+    function closeModal() {
+        handleModalConfirm(true);
+    }
+
+    function showScreen(screenId) {
+        document.getElementById('screen-home').classList.add('hidden');
+        document.getElementById('screen-island-select').classList.add('hidden');
+        document.getElementById('screen-codex').classList.add('hidden');
+        document.getElementById('screen-game').classList.add('hidden');
+        document.getElementById('screen-victory').classList.add('hidden');
+        document.getElementById(screenId).classList.remove('hidden');
+    }
+
+    function showIslandSelect() {
+        updateBadges();
+        showScreen('screen-island-select');
+    }
+
+    function updateBadges() {
+        for (let i = 0; i < 3; i++) {
+            const badge = document.getElementById(`badge-${i}`);
+            if (unlockedLevels[i]) {
+                badge.innerText = "⭐ 已解鎖/通關";
+                badge.style.color = "#059669";
+            } else {
+                badge.innerText = "🔒 尚未解鎖";
+                badge.style.color = "#9ca3af";
+            }
+        }
+    }
+
+    function openCodex(levelIndex) {
+        if (!unlockedLevels[levelIndex]) {
+            showModal("請先通關前面的島嶼才能解鎖這裡喔！");
+            return;
+        }
+        currentLevel = levelIndex;
+        
+        document.getElementById('codex-title').innerText = `📖 第 ${levelIndex + 1} 島・注釋複習秘笈`;
+        
+        const codexContent = document.getElementById('codex-content');
+        codexContent.innerHTML = "";
+        
+        levelsData[levelIndex].forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'codex-item';
+            div.innerHTML = `<span class="codex-word">${item.word}</span>：<span class="codex-ans">${item.answer}</span>`;
+            codexContent.appendChild(div);
+        });
+
+        showScreen('screen-codex');
+    }
+
+    function startLevelFromCodex() {
+        comboCount = 0;
+        activeQueue = [...levelsData[currentLevel]].sort(() => Math.random() - 0.5);
+        
+        document.getElementById('level-title').innerText = `第 ${currentLevel + 1} 島挑戰`;
+        showScreen('screen-game');
+        loadQuestion();
+    }
+
+    function loadQuestion() {
+        if (activeQueue.length === 0) {
+            if (currentLevel < 2) {
+                unlockedLevels[currentLevel + 1] = true;
+                showModal(`恭喜通關第 ${currentLevel + 1} 島！已解鎖下一座島嶼！`, () => {
+                    showIslandSelect();
+                });
+            } else {
+                showScreen('screen-victory');
+            }
+            return;
+        }
+
+        const q = activeQueue[0]; 
+        currentCorrectAnswer = q.answer;
+
+        document.getElementById('progress-text').innerText = `剩餘考驗：${activeQueue.length}`;
+        document.getElementById('word-box').innerText = q.word;
+        document.getElementById('feedback-msg').innerText = "";
+        document.getElementById('next-btn').classList.add('hidden');
+
+        const comboBox = document.getElementById('combo-box');
+        if (comboCount > 1) {
+            comboBox.classList.remove('hidden');
+            comboBox.innerText = `🔥 連擊 x${comboCount}`;
+        } else {
+            comboBox.classList.add('hidden');
+        }
+
+        let options = [q.answer];
+        while (options.length < 3) {
+            const randomLevel = levelsData[Math.floor(Math.random() * levelsData.length)];
+            const randomItem = randomLevel[Math.floor(Math.random() * randomLevel.length)];
+            if (!options.includes(randomItem.answer)) {
+                options.push(randomItem.answer);
+            }
+        }
+        options.sort(() => Math.random() - 0.5);
+
+        const optionsBox = document.getElementById('options-box');
+        optionsBox.innerHTML = "";
+        options.forEach(opt => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerText = opt;
+            btn.onclick = () => checkAnswer(btn, opt, q);
+            optionsBox.appendChild(btn);
+        });
+    }
+
+    function checkAnswer(selectedBtn, selectedText, currentQ) {
+        const allBtns = document.querySelectorAll('.option-btn');
+        allBtns.forEach(b => b.disabled = true); 
+
+        const feedbackMsg = document.getElementById('feedback-msg');
+
+        if (selectedText === currentCorrectAnswer) {
+            selectedBtn.classList.add('correct');
+            comboCount++;
+            playSound('correct');
+            feedbackMsg.innerText = "✨ 答對了！太棒囉！";
+            feedbackMsg.style.color = "#059669";
+            
+            activeQueue.shift();
+            document.getElementById('next-btn').classList.remove('hidden');
+        } else {
+            selectedBtn.classList.add('wrong');
+            comboCount = 0; 
+            playSound('wrong');
+            allBtns.forEach(b => {
+                if (b.innerText === currentCorrectAnswer) {
+                    b.classList.add('correct');
+                }
+            });
+            feedbackMsg.innerText = "💡 答錯囉！這題稍後會再次出現讓你複習喔！";
+            feedbackMsg.style.color = "#dc2626";
+
+            activeQueue.shift();
+            activeQueue.push(currentQ);
+
+            document.getElementById('next-btn').classList.remove('hidden');
+        }
+    }
+
+    function nextQuestion() {
+        loadQuestion();
+    }
+
+    function resetProgress() {
+        showModal("確定要重置所有闖關進度嗎？", () => {
+            unlockedLevels = [true, false, false];
+            updateBadges();
+            showModal("已重置進度！");
+        }, true);
+    }
+</script>
+
+</body>
+</html>
